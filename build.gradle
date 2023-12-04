@@ -1,0 +1,115 @@
+plugins {
+    id 'java'
+    id 'io.spring.dependency-management' version '1.1.0'
+//    id 'org.springframework.boot' version '3.1.1'
+
+    id 'jacoco'
+}
+
+group = 'com.test'
+//version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.7.6'
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.7.6'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.6'
+    runtimeOnly 'org.postgresql:postgresql:42.5.1'
+    implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    testImplementation group: 'org.testng', name: 'testng', version: '7.6.1'
+
+//    OpenAPI3 dependencies
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.13'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-webflux-ui', version: '1.6.13'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-webmvc-core', version: '1.6.13'
+
+
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-config-client', version: '3.1.4'
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.5'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-config', version: '3.1.4'
+//Logging
+    implementation 'org.slf4j:slf4j-simple:2.0.6'
+    implementation 'org.slf4j:slf4j-api:2.0.6'
+
+
+    implementation('org.springframework.cloud:spring-cloud-starter:3.1.5') {
+        exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
+    }
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.10'
+
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.5'
+
+//    implementation group: 'com.okta.spring', name: 'okta-spring-boot-starter', version: '2.1.6'
+
+//   Need this for export to excel
+    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.3'
+//    Used to generate fields dynamically
+    implementation group: 'org.apache.poi', name: 'poi', version: '5.2.3'
+//    OpenCSV
+    implementation 'com.opencsv:opencsv:5.9'
+    //Aparche-commons-csv
+    implementation 'org.apache.commons:commons-csv:1.10.0'
+
+
+}
+
+test {
+    useJUnitPlatform()
+    testLogging.showStandardStreams = true
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED"
+    }
+    finalizedBy jacocoTestReport
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+jacoco {
+    toolVersion = "0.8.8"
+    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+}
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+}
+jacocoTestCoverageVerification {
+    dependsOn test
+    // to run coverage verification during the build (and fail when appropriate)
+    check.dependsOn jacocoTestCoverageVerification
+    violationRules {
+        failOnViolation = true
+        rule {
+            limit {
+                counter = 'LINE'
+                minimum = 0.85
+            }
+        }
+
+        rule {
+            enabled = false
+            element = 'CLASS'
+            includes = ['org.gradle.*']
+
+            limit {
+                counter = 'LINE'
+                value = 'TOTALCOUNT'
+                minimum = 0
+            }
+        }
+    }
+}
