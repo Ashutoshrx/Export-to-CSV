@@ -33,7 +33,7 @@ public class GenericController {
     private EmployeeService employeeService;
 
     @GetMapping("/generic/aparche")
-    public void exportToCsv(HttpServletResponse response) throws IOException {
+    public ResponseEntity<byte[]> exportToCsv() throws IOException {
         // Assuming you have a WorkbookDTO instance named workbookDTO
         List<Employee> allEmployees = employeeService.getAllEmployees();
         WorkbookDTO workbookDTO = new WorkbookDTO();
@@ -44,10 +44,11 @@ public class GenericController {
         workbookDTO.setSheetInfos(new ArrayList<>() {{
             add(sheetInfo);
         }});
-        response.setContentType("text/csv");
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + outputPath + "\"");
-        aparcheCsvExporter.exportToCsv(workbookDTO);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDisposition(ContentDisposition.parse("attachment; filename=\"" + outputPath + "\""));
+        byte[] response = aparcheCsvExporter.exportToCsv(workbookDTO);
+        return ResponseEntity.ok().headers(headers).body(response);
     }
 
     @GetMapping("/v1/generic/opencsv")
@@ -56,8 +57,6 @@ public class GenericController {
         WorkbookDTO workbookDTO = new WorkbookDTO();
         SheetInfo sheetInfo = new SheetInfo();
         sheetInfo.setData(allEmployees);
-//        Class<?> myClass = Class.forName(String.valueOf(sheetInfo.getData().getClass()));
-//        System.out.println(myClass);
         String outputPath = "output.csv";
         sheetInfo.setSheetName(outputPath);
         workbookDTO.setSheetInfos(new ArrayList<>() {{
@@ -69,23 +68,6 @@ public class GenericController {
         openCsvExportHelper.exportToCsv(workbookDTO);
     }
 
-    /*@GetMapping("/v2/generic/opencsv")
-    public ResponseEntity<byte[]> exportToCSVUsingOpenCsvV2() throws IOException, ClassNotFoundException {
-        List<Employee> allEmployees = employeeService.getAllEmployees();
-        WorkbookDTO workbookDTO = new WorkbookDTO();
-        SheetInfo sheetInfo = new SheetInfo();
-        sheetInfo.setData(allEmployees);
-        String outputPath = "test.csv";
-        sheetInfo.setSheetName(outputPath);
-        workbookDTO.setSheetInfos(new ArrayList<>() {{
-            add(sheetInfo);
-        }});
-        HttpHeaders header = new HttpHeaders();
-        header.setContentType(MediaType.valueOf("text/csv"));
-        header.setContentDisposition(ContentDisposition.parse("attachment; filename=\"" + outputPath + "\""));
-        byte[] response = openCsvExportHelper.exportToCsv(workbookDTO);
-        return ResponseEntity.ok().headers(header).body(Base64.getEncoder().encode(response));
-    }*/
     @GetMapping("/v2/generic/opencsv")
     public ResponseEntity<byte[]> exportToCSVUsingOpenCsv() throws IOException, ClassNotFoundException {
         List<Employee> allEmployees = employeeService.getAllEmployees();
@@ -100,7 +82,6 @@ public class GenericController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-//        headers.setContentType(MediaType.valueOf("text/csv"));
         headers.setContentDisposition(ContentDisposition.parse("attachment; filename=\"" + outputPath + "\""));
 
         byte[] csvData = openCsvExportHelper.exportToCsv(workbookDTO);

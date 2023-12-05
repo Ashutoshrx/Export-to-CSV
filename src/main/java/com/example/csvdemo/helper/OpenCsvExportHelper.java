@@ -28,37 +28,7 @@ public class OpenCsvExportHelper {
     private ObjectMapper objectMapper;
 
 
-    //    @TODO working code
-    /*public byte[] exportToCsv(WorkbookDTO workbookDTO) {
-        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-             PrintWriter printWriter = new PrintWriter(byteArrayOutputStream)) {
 
-            HeaderColumnNameMappingStrategy headerColumnNameMappingStrategy = new HeaderColumnNameMappingStrategy();
-            headerColumnNameMappingStrategy.setType(workbookDTO.getSheetInfos().get(0).getData().get(0).getClass());
-
-
-
-            System.out.println("Headers:" + objectMapper.writeValueAsString(headerColumnNameMappingStrategy.generateHeader(workbookDTO.getSheetInfos().
-                    get(0).getData().get(0).getClass().getAnnotation(CsvBindByPosition.class))));
-
-
-            StatefulBeanToCsv writer = new StatefulBeanToCsvBuilder(printWriter)
-                    .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
-                    .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
-                    .build();
-
-            List<SheetInfo> sheetInfos = workbookDTO.getSheetInfos();
-            for (SheetInfo s : sheetInfos) {
-                writer.write(s.getData());
-            }
-
-            // Flush the PrintWriter to ensure data is written to the stream
-            printWriter.flush();
-            return byteArrayOutputStream.toByteArray();
-        } catch (CsvRequiredFieldEmptyException | CsvDataTypeMismatchException | IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }*/
     public byte[] exportToCsv(WorkbookDTO workbookDTO) {
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
              PrintWriter printWriter = new PrintWriter(byteArrayOutputStream)) {
@@ -67,7 +37,7 @@ public class OpenCsvExportHelper {
             headerColumnNameMappingStrategy.setType(Employee.class);
 
 
-            CustomColumnMappingStrategy<Employee> customColumnMappingStrategy = new CustomColumnMappingStrategy<>(headerColumnNameMappingStrategy.generateHeader(Employee.class));
+            CustomColumnMappingStrategy<Employee> customColumnMappingStrategy = new CustomColumnMappingStrategy<>(headerColumnNameMappingStrategy.generateHeader(Employee.class),"xyz");
             customColumnMappingStrategy.setType(Employee.class);
 
             StatefulBeanToCsv writer = new StatefulBeanToCsvBuilder(printWriter)
@@ -80,7 +50,6 @@ public class OpenCsvExportHelper {
                 writer.write(s.getData());
             }
 //            writer.
-
             // Flush the PrintWriter to ensure data is written to the stream
             printWriter.flush();
             return byteArrayOutputStream.toByteArray();

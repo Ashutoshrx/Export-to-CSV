@@ -6,8 +6,15 @@ import org.apache.poi.ss.formula.functions.T;
 
 public class CustomColumnMappingStrategy<T> extends ColumnPositionMappingStrategy<T> {
     private String[] headers;
+    private String sheetName;
 
     public CustomColumnMappingStrategy() {
+    }
+
+    public CustomColumnMappingStrategy(String[] headers, String sheetName) {
+        this.headers = headers;
+        this.sheetName = sheetName;
+        this.setColumnMapping(sheetName);
     }
 
     public CustomColumnMappingStrategy(String[] headers) {
