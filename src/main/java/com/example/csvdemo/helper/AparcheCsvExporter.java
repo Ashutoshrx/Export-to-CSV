@@ -69,7 +69,6 @@ public class AparcheCsvExporter<T> {
                     if (!data.isEmpty()) {
                         writeHeadersToCsv(data.get(0).getClass(), csvPrinter);
                     }
-
                     csvPrinter.println();
                     writeDataToCsv(data, dataStartRow, csvPrinter);
                 }

@@ -3,31 +3,48 @@ package com.example.csvdemo.helper;
 import com.example.csvdemo.dto.Employee;
 import com.example.csvdemo.dto.SheetInfo;
 import com.example.csvdemo.dto.WorkbookDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.bean.*;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import com.opencsv.exceptions.*;
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.formula.functions.T;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.List;
+
+import static org.springframework.util.ReflectionUtils.findField;
 
 @Component
 public class OpenCsvExportHelper {
+    @Autowired
+    private ObjectMapper objectMapper;
 
 
     //    @TODO working code
-    public byte[] exportToCsv(WorkbookDTO workbookDTO) {
+    /*public byte[] exportToCsv(WorkbookDTO workbookDTO) {
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
              PrintWriter printWriter = new PrintWriter(byteArrayOutputStream)) {
+
             HeaderColumnNameMappingStrategy headerColumnNameMappingStrategy = new HeaderColumnNameMappingStrategy();
             headerColumnNameMappingStrategy.setType(workbookDTO.getSheetInfos().get(0).getData().get(0).getClass());
+
+
+
+            System.out.println("Headers:" + objectMapper.writeValueAsString(headerColumnNameMappingStrategy.generateHeader(workbookDTO.getSheetInfos().
+                    get(0).getData().get(0).getClass().getAnnotation(CsvBindByPosition.class))));
+
+
             StatefulBeanToCsv writer = new StatefulBeanToCsvBuilder(printWriter)
                     .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
-                    .withSeparator(CSVWriter.DEFAULT_SEPARATOR).withMappingStrategy(headerColumnNameMappingStrategy)
+                    .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
                     .build();
 
             List<SheetInfo> sheetInfos = workbookDTO.getSheetInfos();
@@ -41,36 +58,36 @@ public class OpenCsvExportHelper {
         } catch (CsvRequiredFieldEmptyException | CsvDataTypeMismatchException | IOException ex) {
             throw new RuntimeException(ex);
         }
-    }
-/*    public byte[] exportToCsv(WorkbookDTO workbookDTO) {
-        try (StringWriter stringWriter = new StringWriter();
-             CSVWriter csvWriter = new CSVWriter(stringWriter,
-                     CSVWriter.DEFAULT_SEPARATOR,
-                     CSVWriter.NO_QUOTE_CHARACTER,
-                     CSVWriter.NO_ESCAPE_CHARACTER,
-                     CSVWriter.DEFAULT_LINE_END)) {
-            ColumnPositionMappingStrategy<T> strategy = new ColumnPositionMappingStrategy<>();
-            strategy.setType(T.class);
+    }*/
+    public byte[] exportToCsv(WorkbookDTO workbookDTO) {
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             PrintWriter printWriter = new PrintWriter(byteArrayOutputStream)) {
 
-            StatefulBeanToCsv writer = new StatefulBeanToCsvBuilder(csvWriter)
-                    .withSeparator(CSVWriter.DEFAULT_SEPARATOR).withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
-                    .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
+            HeaderColumnNameMappingStrategy headerColumnNameMappingStrategy = new HeaderColumnNameMappingStrategy();
+            headerColumnNameMappingStrategy.setType(Employee.class);
+
+
+            CustomColumnMappingStrategy<Employee> customColumnMappingStrategy = new CustomColumnMappingStrategy<>(headerColumnNameMappingStrategy.generateHeader(Employee.class));
+            customColumnMappingStrategy.setType(Employee.class);
+
+            StatefulBeanToCsv writer = new StatefulBeanToCsvBuilder(printWriter)
+                    .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
+                    .withSeparator(CSVWriter.DEFAULT_SEPARATOR).withMappingStrategy(customColumnMappingStrategy)
                     .build();
 
             List<SheetInfo> sheetInfos = workbookDTO.getSheetInfos();
             for (SheetInfo s : sheetInfos) {
                 writer.write(s.getData());
             }
+//            writer.
 
-            // Get the CSV data as a string
-            String csvData = stringWriter.toString();
-            System.out.println(csvData);
-            // Convert the string to a byte array
-            return csvData.getBytes(StandardCharsets.UTF_8);
+            // Flush the PrintWriter to ensure data is written to the stream
+            printWriter.flush();
+            return byteArrayOutputStream.toByteArray();
         } catch (CsvRequiredFieldEmptyException | CsvDataTypeMismatchException | IOException ex) {
             throw new RuntimeException(ex);
         }
-    }*/
+    }
 
 
 }

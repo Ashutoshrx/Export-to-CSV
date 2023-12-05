@@ -1,31 +1,27 @@
 package com.example.csvdemo.dto;
 
-import com.opencsv.bean.CsvBindAndSplitByPosition;
-import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvBindByPosition;
-import com.opencsv.bean.CsvCustomBindByName;
+import com.opencsv.bean.*;
 
 import java.io.Serializable;
 
 public class Employee implements Serializable {
-    @CsvBindByPosition(position = 6)
-    @CsvBindByName(column = "AshutoshId")
+    @CsvBindByPosition(position = 0)
+    @CsvBindByName(column = "testID")
     private long id;
-
-    @CsvBindByPosition(position = 5)
-    @CsvBindByName(column = "AshutoshFirstName")
+    @CsvBindByPosition(position = 4)
+    @CsvBindByName(column = "testFirstName")
     private String firstName;
-    @CsvBindByPosition(position = 1)
-    @CsvBindByName(column = "AshutoshLastName")
+    @CsvBindByPosition(position = 5)
+    @CsvBindByName(column = "testLastName")
     private String lastName;
-    @CsvBindByPosition(position = 9)
-    @CsvBindByName(column = "AshutoshEmail")
+    @CsvBindByPosition(position = 1)
+    @CsvBindByName(column = "testEmail")
     private String email;
     @CsvBindByPosition(position = 2)
-    @CsvBindByName(column = "AshutoshSalary")
+    @CsvBindByName(column = "testSalary")
     private Integer salary;
     @CsvBindByPosition(position = 3)
-    @CsvBindByName(column = "IsAshutoshSinger")
+    @CsvBindByName(column = "testIsSinger")
     private boolean isSinger;
 
     public long getId() {
