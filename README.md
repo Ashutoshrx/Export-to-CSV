@@ -3,8 +3,8 @@
 ##A quick differentiation between OpenCsv And Common Csv.
 
 
-          **Aparche Common CSV	**                                                                         **OpenCsv**
-_Headers can be read from Properties file.(A little easier than OpenCsv)	            Headers can be read from Properties file.
+          **Aparche Common CSV**                                                                         **OpenCsv**
+**_Headers can be read from Properties file.(A little easier than OpenCsv)**	            **Headers can be read from Properties file.**
 Custom Column Ordering is not possible.(default-attributes' name order)	            Custom Column Ordering is possible.(default- ascending order sorted)
 Sheet name manipulation is not possible.	                                          Sheet name manipulation is not possibe.
 If a cell is null, we can set custom value,i.e-'~'	                                The cell will be empty_.
